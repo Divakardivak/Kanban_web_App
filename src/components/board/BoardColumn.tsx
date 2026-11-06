@@ -4,7 +4,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
-import type { Column, Task } from "../../hooks/useStore";
+import type { Column, Task, TaskPriority, Subtask } from "../../hooks/useStore";
 import TaskCard from "./TaskCard";
 import { useState } from "react";
 import TaskModal from "../modals/TaskModal";
@@ -18,9 +18,9 @@ interface Props {
     index: number;
     deleteColumn: (colId: string) => void;
     updateColumn: (colId: string, title: string, color?: string) => void;
-    addTask: (colId: string, content: string, color?: string) => void;
+    addTask: (colId: string, content: string, color?: string, priority?: TaskPriority, dueDate?: string, subtasks?: Subtask[]) => void;
     deleteTask: (taskId: string, columnId: string) => void;
-    updateTask: (taskId: string, content: string, color?: string) => void;
+    updateTask: (taskId: string, content: string, color?: string, priority?: TaskPriority, dueDate?: string, subtasks?: Subtask[]) => void;
 }
 
 const BoardColumn = ({
@@ -40,8 +40,8 @@ const BoardColumn = ({
     const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
     const { showNotification } = useNotification();
 
-    const columnColor = column.color && column.color !== '#e0e0e0' 
-        ? column.color 
+    const columnColor = column.color && column.color !== '#e0e0e0'
+        ? column.color
         : (isDark ? '#6366F1' : '#4F46E5');
 
     return (
@@ -53,18 +53,19 @@ const BoardColumn = ({
                         ref={provided.innerRef}
                         elevation={0}
                         sx={{
-                            width: 320,
-                            minWidth: 320,
-                            maxHeight: 'calc(100vh - 100px)',
+                            width: { xs: '84vw', sm: 310, md: 320 },
+                            minWidth: { xs: '84vw', sm: 310, md: 320 },
+                            maxWidth: { xs: 340, sm: 340 },
+                            maxHeight: { xs: 'calc(100vh - 145px)', sm: 'calc(100vh - 120px)' },
                             display: "flex",
                             flexDirection: "column",
-                            backgroundColor: isDark 
-                                ? 'rgba(12, 17, 29, 0.75)' 
+                            backgroundColor: isDark
+                                ? 'rgba(12, 17, 29, 0.75)'
                                 : 'rgba(241, 245, 249, 0.85)',
                             backdropFilter: 'blur(16px)',
                             border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(226, 232, 240, 0.9)'}`,
                             borderRadius: '16px',
-                            mr: 2.5,
+                            mr: { xs: 1.5, sm: 2.5 },
                             overflow: 'hidden',
                             position: 'relative',
                             boxShadow: isDark
@@ -191,8 +192,8 @@ const BoardColumn = ({
                                         minHeight: 120,
                                         transition: 'all 0.2s ease',
                                         borderRadius: '10px',
-                                        backgroundColor: snapshot.isDraggingOver 
-                                            ? (isDark ? 'rgba(99, 102, 241, 0.1)' : 'rgba(79, 70, 229, 0.05)') 
+                                        backgroundColor: snapshot.isDraggingOver
+                                            ? (isDark ? 'rgba(99, 102, 241, 0.1)' : 'rgba(79, 70, 229, 0.05)')
                                             : 'transparent',
                                         outline: snapshot.isDraggingOver
                                             ? `2px dashed ${isDark ? '#6366F1' : '#4F46E5'}`
@@ -272,8 +273,8 @@ const BoardColumn = ({
                 open={addTaskModalOpen}
                 mode="add"
                 onClose={() => setAddTaskModalOpen(false)}
-                onSave={(content, color) => {
-                    addTask(column.id, content, color);
+                onSave={(content, color, priority, dueDate, subtasks) => {
+                    addTask(column.id, content, color, priority, dueDate, subtasks);
                     showNotification("Task added successfully", "success");
                 }}
             />

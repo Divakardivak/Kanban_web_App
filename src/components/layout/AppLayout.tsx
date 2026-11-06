@@ -1,15 +1,17 @@
-import { 
-    Box, 
-    AppBar, 
-    Toolbar, 
-    Typography, 
-    IconButton, 
-    useTheme, 
-    InputBase, 
+import {
+    Box,
+    AppBar,
+    Toolbar,
+    Typography,
+    IconButton,
+    useTheme,
+    InputBase,
     Tooltip,
     Chip,
     Avatar,
-    CircularProgress
+    CircularProgress,
+    Button,
+    Badge
 } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import ViewKanbanIcon from "@mui/icons-material/ViewKanban";
@@ -21,6 +23,9 @@ import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 import ClearIcon from "@mui/icons-material/Clear";
 import CloudDoneIcon from "@mui/icons-material/CloudDone";
 import CloudOffIcon from "@mui/icons-material/CloudOff";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import ImportExportIcon from "@mui/icons-material/ImportExport";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebase";
 import { useColorMode } from "../../context/ColorModeContext";
@@ -29,42 +34,46 @@ import { useFirestoreSync } from "../../hooks/useFirestoreSync";
 import { styled } from "@mui/material/styles";
 import { useState } from "react";
 import ConfirmModal from "../modals/ConfirmModal";
+import AiPlannerModal from "../modals/AiPlannerModal";
+import { ExportImportModal } from "../modals/ExportImportModal";
+import { ActivityDrawer } from "../activity/ActivityDrawer";
 import { useNotification } from "../../context/NotificationContext";
 
 const SearchContainer = styled('div')(({ theme }) => ({
     position: 'relative',
     borderRadius: 12,
-    backgroundColor: theme.palette.mode === 'dark' 
-        ? 'rgba(255, 255, 255, 0.04)' 
+    backgroundColor: theme.palette.mode === 'dark'
+        ? 'rgba(255, 255, 255, 0.04)'
         : 'rgba(0, 0, 0, 0.03)',
-    border: `1px solid ${
-        theme.palette.mode === 'dark' 
-            ? 'rgba(255, 255, 255, 0.08)' 
+    border: `1px solid ${theme.palette.mode === 'dark'
+            ? 'rgba(255, 255, 255, 0.08)'
             : 'rgba(0, 0, 0, 0.08)'
-    }`,
+        }`,
     transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
     '&:hover': {
-        backgroundColor: theme.palette.mode === 'dark' 
-            ? 'rgba(255, 255, 255, 0.07)' 
+        backgroundColor: theme.palette.mode === 'dark'
+            ? 'rgba(255, 255, 255, 0.07)'
             : 'rgba(0, 0, 0, 0.05)',
-        borderColor: theme.palette.mode === 'dark' 
-            ? 'rgba(99, 102, 241, 0.4)' 
+        borderColor: theme.palette.mode === 'dark'
+            ? 'rgba(99, 102, 241, 0.4)'
             : 'rgba(99, 102, 241, 0.3)',
     },
     '&:focus-within': {
         borderColor: theme.palette.primary.main,
-        boxShadow: theme.palette.mode === 'dark' 
-            ? '0 0 16px rgba(99, 102, 241, 0.3)' 
+        boxShadow: theme.palette.mode === 'dark'
+            ? '0 0 16px rgba(99, 102, 241, 0.3)'
             : '0 0 12px rgba(79, 70, 229, 0.15)',
-        backgroundColor: theme.palette.mode === 'dark' 
-            ? 'rgba(18, 24, 38, 0.8)' 
+        backgroundColor: theme.palette.mode === 'dark'
+            ? 'rgba(18, 24, 38, 0.8)'
             : '#FFFFFF',
     },
     display: 'flex',
     alignItems: 'center',
     width: '100%',
-    maxWidth: 340,
-    marginLeft: theme.spacing(2),
+    maxWidth: 260,
+    marginLeft: theme.spacing(1.5),
+    marginRight: theme.spacing(1),
+    flexShrink: 1,
 }));
 
 const SearchIconWrapper = styled('div')(({ theme }) => ({
@@ -90,9 +99,12 @@ const AppLayout = () => {
     const theme = useTheme();
     const isDark = theme.palette.mode === 'dark';
     const colorMode = useColorMode();
-    const { searchQuery, setSearchQuery, clearBoard, tasks, columnOrder } = useStore();
-    const { syncStatus, triggerManualSave } = useFirestoreSync();
+    const { searchQuery, setSearchQuery, clearBoard, tasks, columnOrder, activities } = useStore();
+    const { syncStatus, syncError, triggerManualSave } = useFirestoreSync();
     const [confirmResetOpen, setConfirmResetOpen] = useState(false);
+    const [aiPlannerOpen, setAiPlannerOpen] = useState(false);
+    const [exportImportOpen, setExportImportOpen] = useState(false);
+    const [activityDrawerOpen, setActivityDrawerOpen] = useState(false);
     const { showNotification } = useNotification();
 
     const totalTasks = Object.keys(tasks).length;
@@ -105,10 +117,10 @@ const AppLayout = () => {
     };
 
     return (
-        <Box sx={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
-            height: '100vh', 
+        <Box sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100vh',
             overflow: 'hidden',
             bgcolor: 'background.default',
             position: 'relative',
@@ -133,10 +145,10 @@ const AppLayout = () => {
             />
 
             {/* Futuristic Glassmorphic Header */}
-            <AppBar 
-                position="static" 
-                elevation={0} 
-                sx={{ 
+            <AppBar
+                position="static"
+                elevation={0}
+                sx={{
                     position: 'relative',
                     zIndex: 1,
                     borderBottom: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.07)'}`,
@@ -145,7 +157,7 @@ const AppLayout = () => {
                     color: 'text.primary',
                 }}
             >
-                <Toolbar sx={{ minHeight: '64px !important', px: { xs: 2, sm: 3 } }}>
+                <Toolbar sx={{ minHeight: { xs: '56px !important', sm: '64px !important' }, px: { xs: 1.5, sm: 3 } }}>
                     {/* Brand Logo & Name */}
                     <Box sx={{ display: 'flex', alignItems: 'center', textDecoration: 'none', mr: 2 }}>
                         <Box
@@ -164,16 +176,16 @@ const AppLayout = () => {
                             <ViewKanbanIcon sx={{ color: '#FFFFFF', fontSize: 22 }} />
                         </Box>
                         <Box>
-                            <Typography 
-                                variant="h6" 
-                                component="div" 
-                                sx={{ 
+                            <Typography
+                                variant="h6"
+                                component="div"
+                                sx={{
                                     fontFamily: '"Outfit", sans-serif',
-                                    fontWeight: 800, 
+                                    fontWeight: 800,
                                     letterSpacing: '-0.02em',
                                     lineHeight: 1.1,
-                                    background: isDark 
-                                        ? 'linear-gradient(135deg, #FFFFFF 30%, #CBD5E1 100%)' 
+                                    background: isDark
+                                        ? 'linear-gradient(135deg, #FFFFFF 30%, #CBD5E1 100%)'
                                         : 'linear-gradient(135deg, #0F172A 30%, #334155 100%)',
                                     WebkitBackgroundClip: 'text',
                                     WebkitTextFillColor: 'transparent',
@@ -191,10 +203,10 @@ const AppLayout = () => {
 
                     {/* Real-time Cloud Sync Pill */}
                     <Tooltip title={
-                        syncStatus === 'synced' ? "Connected to Cloud Firestore (Real-time Sync Active). Click to re-sync." :
-                        syncStatus === 'syncing' ? "Saving changes to Cloud Firestore..." :
-                        syncStatus === 'error' ? "Cloud sync offline. Data is saved locally in your browser." :
-                        "Connecting to Cloud..."
+                        syncStatus === 'synced' ? "Connected to Cloud Firestore (Real-time Sync Active)" :
+                            syncStatus === 'syncing' ? "Saving changes to Cloud Firestore..." :
+                                syncStatus === 'error' ? (syncError || "Cloud sync offline. Check Firestore rules in Firebase Console.") :
+                                    "Connecting to Cloud..."
                     }>
                         <Chip
                             icon={
@@ -208,8 +220,8 @@ const AppLayout = () => {
                             }
                             label={
                                 syncStatus === 'syncing' ? "SYNCING..." :
-                                syncStatus === 'error' ? "OFFLINE" :
-                                "CLOUD SYNCED"
+                                    syncStatus === 'error' ? "OFFLINE" :
+                                        "CLOUD SYNCED"
                             }
                             size="small"
                             onClick={triggerManualSave}
@@ -220,19 +232,18 @@ const AppLayout = () => {
                                 fontWeight: 700,
                                 letterSpacing: '0.06em',
                                 cursor: 'pointer',
-                                bgcolor: 
+                                bgcolor:
                                     syncStatus === 'syncing' ? (isDark ? 'rgba(99, 102, 241, 0.15)' : 'rgba(79, 70, 229, 0.1)') :
-                                    syncStatus === 'error' ? (isDark ? 'rgba(244, 63, 94, 0.15)' : 'rgba(244, 63, 94, 0.1)') :
-                                    (isDark ? 'rgba(16, 185, 129, 0.12)' : 'rgba(16, 185, 129, 0.1)'),
-                                color: 
+                                        syncStatus === 'error' ? (isDark ? 'rgba(244, 63, 94, 0.15)' : 'rgba(244, 63, 94, 0.1)') :
+                                            (isDark ? 'rgba(16, 185, 129, 0.12)' : 'rgba(16, 185, 129, 0.1)'),
+                                color:
                                     syncStatus === 'syncing' ? '#818CF8' :
-                                    syncStatus === 'error' ? '#F43F5E' :
-                                    '#10B981',
-                                border: `1px solid ${
-                                    syncStatus === 'syncing' ? 'rgba(99, 102, 241, 0.3)' :
-                                    syncStatus === 'error' ? 'rgba(244, 63, 94, 0.3)' :
-                                    'rgba(16, 185, 129, 0.25)'
-                                }`,
+                                        syncStatus === 'error' ? '#F43F5E' :
+                                            '#10B981',
+                                border: `1px solid ${syncStatus === 'syncing' ? 'rgba(99, 102, 241, 0.3)' :
+                                        syncStatus === 'error' ? 'rgba(244, 63, 94, 0.3)' :
+                                            'rgba(16, 185, 129, 0.25)'
+                                    }`,
                                 mr: 2,
                                 transition: 'all 0.2s ease',
                                 '&:hover': {
@@ -254,8 +265,8 @@ const AppLayout = () => {
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
                         {searchQuery && (
-                            <IconButton 
-                                size="small" 
+                            <IconButton
+                                size="small"
                                 onClick={() => setSearchQuery("")}
                                 sx={{ mr: 0.5, p: 0.5, color: 'text.secondary' }}
                             >
@@ -264,30 +275,182 @@ const AppLayout = () => {
                         )}
                     </SearchContainer>
 
-                    {/* Quick Stats Pill */}
+                    {/* AI Project Planner Button */}
+                    <Tooltip title="Generate project workflow & tasks with AI">
+                        <Button
+                            variant="outlined"
+                            size="small"
+                            onClick={() => setAiPlannerOpen(true)}
+                            startIcon={<AutoAwesomeIcon sx={{ fontSize: '16px !important', color: '#F59E0B' }} />}
+                            sx={{
+                                display: { xs: 'none', sm: 'inline-flex' },
+                                whiteSpace: 'nowrap',
+                                flexShrink: 0,
+                                ml: 1,
+                                borderRadius: '10px',
+                                fontWeight: 700,
+                                fontSize: '0.8rem',
+                                py: 0.6,
+                                px: 1.4,
+                                height: 34,
+                                bgcolor: isDark ? 'rgba(245, 158, 11, 0.08)' : 'rgba(245, 158, 11, 0.06)',
+                                color: isDark ? '#FDE68A' : '#D97706',
+                                borderColor: isDark ? 'rgba(245, 158, 11, 0.35)' : 'rgba(245, 158, 11, 0.35)',
+                                boxShadow: isDark ? '0 0 12px rgba(245, 158, 11, 0.15)' : 'none',
+                                transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                                '&:hover': {
+                                    bgcolor: isDark ? 'rgba(245, 158, 11, 0.16)' : 'rgba(245, 158, 11, 0.12)',
+                                    borderColor: '#F59E0B',
+                                    transform: 'translateY(-1px)',
+                                    boxShadow: isDark ? '0 0 16px rgba(245, 158, 11, 0.35)' : '0 2px 8px rgba(245, 158, 11, 0.25)',
+                                }
+                            }}
+                        >
+                            AI Plan
+                        </Button>
+                    </Tooltip>
+
+                    {/* Export & Import Button */}
+                    <Tooltip title="Backup or restore your board (JSON & CSV)">
+                        <Button
+                            variant="outlined"
+                            size="small"
+                            onClick={() => setExportImportOpen(true)}
+                            startIcon={<ImportExportIcon sx={{ fontSize: '18px !important', color: '#06B6D4' }} />}
+                            sx={{
+                                display: { xs: 'none', md: 'inline-flex' },
+                                whiteSpace: 'nowrap',
+                                flexShrink: 0,
+                                ml: 1,
+                                borderRadius: '10px',
+                                fontWeight: 700,
+                                fontSize: '0.8rem',
+                                py: 0.6,
+                                px: 1.4,
+                                height: 34,
+                                bgcolor: isDark ? 'rgba(6, 182, 212, 0.08)' : 'rgba(6, 182, 212, 0.06)',
+                                color: isDark ? '#67E8F9' : '#0891B2',
+                                borderColor: isDark ? 'rgba(6, 182, 212, 0.35)' : 'rgba(6, 182, 212, 0.35)',
+                                boxShadow: isDark ? '0 0 12px rgba(6, 182, 212, 0.15)' : 'none',
+                                transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                                '&:hover': {
+                                    bgcolor: isDark ? 'rgba(6, 182, 212, 0.16)' : 'rgba(6, 182, 212, 0.12)',
+                                    borderColor: '#06B6D4',
+                                    transform: 'translateY(-1px)',
+                                    boxShadow: isDark ? '0 0 16px rgba(6, 182, 212, 0.35)' : '0 2px 8px rgba(6, 182, 212, 0.25)',
+                                }
+                            }}
+                        >
+                            Transfer
+                        </Button>
+                    </Tooltip>
+
+                    {/* Quick Stats Pill (Large desktop only) */}
                     <Chip
                         label={`${totalTasks} Tasks • ${totalColumns} Columns`}
                         size="small"
                         sx={{
-                            display: { xs: 'none', lg: 'inline-flex' },
-                            ml: 2,
+                            display: { xs: 'none', xl: 'inline-flex' },
+                            ml: 1.5,
                             height: 26,
                             fontSize: '0.75rem',
                             fontWeight: 600,
                             bgcolor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)',
                             border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)'}`,
                             color: 'text.secondary',
+                            whiteSpace: 'nowrap',
+                            flexShrink: 0,
                         }}
                     />
 
                     <Box sx={{ flexGrow: 1 }} />
 
                     {/* Action Controls */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 0.8 }, flexShrink: 0 }}>
+                        {/* Mobile AI Plan Button */}
+                        <Tooltip title="AI Project Planner">
+                            <IconButton
+                                onClick={() => setAiPlannerOpen(true)}
+                                sx={{
+                                    display: { xs: 'inline-flex', sm: 'none' },
+                                    color: 'text.secondary',
+                                    borderRadius: '10px',
+                                    border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)'}`,
+                                    p: 0.8,
+                                    transition: 'all 0.2s ease',
+                                    '&:hover': {
+                                        color: '#F59E0B',
+                                        bgcolor: isDark ? 'rgba(245, 158, 11, 0.1)' : 'rgba(245, 158, 11, 0.08)',
+                                        borderColor: 'rgba(245, 158, 11, 0.3)',
+                                    }
+                                }}
+                            >
+                                <AutoAwesomeIcon sx={{ fontSize: 19, color: '#F59E0B' }} />
+                            </IconButton>
+                        </Tooltip>
+
+                        <Tooltip title="Backup, Export & Import (JSON / CSV)">
+                            <IconButton
+                                onClick={() => setExportImportOpen(true)}
+                                sx={{
+                                    display: { xs: 'inline-flex', md: 'none' },
+                                    color: 'text.secondary',
+                                    borderRadius: '10px',
+                                    border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)'}`,
+                                    p: { xs: 0.8, sm: 1 },
+                                    transition: 'all 0.2s ease',
+                                    '&:hover': {
+                                        color: '#06B6D4',
+                                        bgcolor: isDark ? 'rgba(6, 182, 212, 0.1)' : 'rgba(6, 182, 212, 0.08)',
+                                        borderColor: 'rgba(6, 182, 212, 0.3)',
+                                    }
+                                }}
+                            >
+                                <ImportExportIcon sx={{ fontSize: 19 }} />
+                            </IconButton>
+                        </Tooltip>
+
+                        {/* Activity Log & History Trigger Button */}
+                        <Tooltip title="Activity Log & History">
+                            <IconButton
+                                onClick={() => setActivityDrawerOpen(true)}
+                                sx={{
+                                    color: 'text.secondary',
+                                    borderRadius: '10px',
+                                    border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)'}`,
+                                    p: 1,
+                                    transition: 'all 0.2s ease',
+                                    '&:hover': {
+                                        color: '#A855F7',
+                                        bgcolor: isDark ? 'rgba(168, 85, 247, 0.1)' : 'rgba(168, 85, 247, 0.08)',
+                                        borderColor: 'rgba(168, 85, 247, 0.3)',
+                                    }
+                                }}
+                            >
+                                <Badge
+                                    badgeContent={activities.length > 0 ? activities.length : undefined}
+                                    max={99}
+                                    sx={{
+                                        '& .MuiBadge-badge': {
+                                            bgcolor: '#A855F7',
+                                            color: '#FFFFFF',
+                                            fontSize: '0.62rem',
+                                            fontWeight: 800,
+                                            height: 16,
+                                            minWidth: 16,
+                                            px: 0.4,
+                                        }
+                                    }}
+                                >
+                                    <NotificationsNoneIcon sx={{ fontSize: 20 }} />
+                                </Badge>
+                            </IconButton>
+                        </Tooltip>
+
                         <Tooltip title="Reset Board">
-                            <IconButton 
-                                onClick={() => setConfirmResetOpen(true)} 
-                                sx={{ 
+                            <IconButton
+                                onClick={() => setConfirmResetOpen(true)}
+                                sx={{
                                     color: 'text.secondary',
                                     borderRadius: '10px',
                                     border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)'}`,
@@ -305,9 +468,9 @@ const AppLayout = () => {
                         </Tooltip>
 
                         <Tooltip title={`Switch to ${isDark ? 'Light' : 'Dark'} Mode`}>
-                            <IconButton 
-                                onClick={colorMode.toggleColorMode} 
-                                sx={{ 
+                            <IconButton
+                                onClick={colorMode.toggleColorMode}
+                                sx={{
                                     color: 'text.secondary',
                                     borderRadius: '10px',
                                     border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)'}`,
@@ -329,10 +492,10 @@ const AppLayout = () => {
                         </Tooltip>
 
                         {/* User Identity Chip & Logout */}
-                        <Box 
-                            sx={{ 
-                                display: 'flex', 
-                                alignItems: 'center', 
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
                                 gap: 1,
                                 ml: 1,
                                 pl: 1.5,
@@ -340,10 +503,10 @@ const AppLayout = () => {
                             }}
                         >
                             <Tooltip title={currentUserEmail}>
-                                <Avatar 
-                                    sx={{ 
-                                        width: 32, 
-                                        height: 32, 
+                                <Avatar
+                                    sx={{
+                                        width: 32,
+                                        height: 32,
                                         fontSize: '0.85rem',
                                         fontWeight: 700,
                                         bgcolor: 'primary.main',
@@ -357,9 +520,9 @@ const AppLayout = () => {
                             </Tooltip>
 
                             <Tooltip title="Sign Out">
-                                <IconButton 
+                                <IconButton
                                     onClick={handleLogout}
-                                    sx={{ 
+                                    sx={{
                                         color: 'text.secondary',
                                         borderRadius: '10px',
                                         p: 1,
@@ -379,17 +542,32 @@ const AppLayout = () => {
             </AppBar>
 
             {/* Board Container */}
-            <Box 
-                component="main" 
-                sx={{ 
-                    flexGrow: 1, 
-                    overflow: 'hidden', 
+            <Box
+                component="main"
+                sx={{
+                    flexGrow: 1,
+                    overflow: 'hidden',
                     position: 'relative',
                     zIndex: 1,
                 }}
             >
                 <Outlet />
             </Box>
+
+            <AiPlannerModal
+                open={aiPlannerOpen}
+                onClose={() => setAiPlannerOpen(false)}
+            />
+
+            <ExportImportModal
+                open={exportImportOpen}
+                onClose={() => setExportImportOpen(false)}
+            />
+
+            <ActivityDrawer
+                open={activityDrawerOpen}
+                onClose={() => setActivityDrawerOpen(false)}
+            />
 
             <ConfirmModal
                 open={confirmResetOpen}

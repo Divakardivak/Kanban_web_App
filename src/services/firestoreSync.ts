@@ -40,6 +40,7 @@ export const startFirestoreSync = (userId: string) => {
                         tasks: current.tasks,
                         columns: current.columns,
                         columnOrder: current.columnOrder,
+                        activities: current.activities || [],
                         updatedAt: serverTimestamp(),
                     });
                     await setDoc(boardDocRef, initialPayload);
@@ -58,6 +59,7 @@ export const startFirestoreSync = (userId: string) => {
                             tasks: data.tasks,
                             columns: data.columns,
                             columnOrder: data.columnOrder,
+                            activities: Array.isArray(data.activities) ? data.activities : undefined,
                         });
                         setTimeout(() => {
                             isApplyingRemoteUpdate = false;
@@ -65,15 +67,21 @@ export const startFirestoreSync = (userId: string) => {
                     }
                     useStore.getState().setSyncStatus('synced');
                 }
-            } catch (err) {
+            } catch (err: any) {
                 console.error("Firestore snapshot processing error:", err);
-                useStore.getState().setSyncStatus('error');
+                const msg = err.code === 'permission-denied'
+                    ? "Permission denied. Update Firestore rules in Firebase Console."
+                    : err.message || "Error processing snapshot.";
+                useStore.getState().setSyncStatus('error', msg);
             }
         },
-        (error) => {
-            console.error("Firestore onSnapshot error:", error);
-            useStore.getState().setSyncStatus('error');
-        }
+            (error: any) => {
+                console.error("Firestore onSnapshot error:", error);
+                const msg = error.code === 'permission-denied'
+                    ? "Permission denied. Update Firestore rules in Firebase Console."
+                    : error.message || "Failed to connect to Cloud Firestore.";
+                useStore.getState().setSyncStatus('error', msg);
+            }
     );
 
     // Initialize the Zustand state subscriber if not already started
@@ -95,6 +103,7 @@ export const saveBoardToCloud = async (userId: string) => {
             tasks: state.tasks,
             columns: state.columns,
             columnOrder: state.columnOrder,
+            activities: state.activities || [],
             updatedAt: serverTimestamp(),
         });
         await setDoc(boardDocRef, payload, { merge: true });
@@ -116,11 +125,12 @@ export const initStoreSubscriber = () => {
         // Skip saving if this change was triggered by remote Firestore snapshot
         if (isApplyingRemoteUpdate) return;
 
-        // Check if board content actually changed
+        // Check if board content or activities changed
         const hasBoardChanged =
             state.tasks !== prevState.tasks ||
             state.columns !== prevState.columns ||
-            state.columnOrder !== prevState.columnOrder;
+            state.columnOrder !== prevState.columnOrder ||
+            state.activities !== prevState.activities;
 
         if (!hasBoardChanged) return;
 
@@ -153,3 +163,4 @@ export const stopFirestoreSync = () => {
     }
     useStore.getState().setSyncStatus('idle');
 };
+

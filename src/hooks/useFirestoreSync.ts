@@ -6,6 +6,7 @@ import { useStore } from "./useStore";
 
 export const useFirestoreSync = () => {
     const syncStatus = useStore((state) => state.syncStatus);
+    const syncError = useStore((state) => state.syncError);
 
     useEffect(() => {
         const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
@@ -30,6 +31,8 @@ export const useFirestoreSync = () => {
 
     return {
         syncStatus,
+        syncError,
         triggerManualSave,
     };
 };
+
