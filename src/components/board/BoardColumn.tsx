@@ -56,7 +56,7 @@ const BoardColumn = ({
                             width: { xs: '84vw', sm: 310, md: 320 },
                             minWidth: { xs: '84vw', sm: 310, md: 320 },
                             maxWidth: { xs: 340, sm: 340 },
-                            maxHeight: { xs: 'calc(100vh - 145px)', sm: 'calc(100vh - 120px)' },
+                            height: '100%',
                             display: "flex",
                             flexDirection: "column",
                             backgroundColor: isDark

@@ -176,7 +176,7 @@ const Board = () => {
                                     width: "100%",
                                     overflowX: "auto",
                                     overflowY: "hidden",
-                                    alignItems: "flex-start",
+                                    alignItems: "stretch",
                                     p: { xs: 1.5, sm: 2.5, md: 3 },
                                     WebkitOverflowScrolling: 'touch',
                                     '&::-webkit-scrollbar': {

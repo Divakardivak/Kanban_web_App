@@ -171,16 +171,16 @@ const TaskCard = ({ task, index, updateTask, deleteTask, columnId }: Props) => {
 
                         <CardContent
                             sx={{
-                                p: '14px 14px 14px 16px !important',
-                                pb: '16px !important',
+                                p: '12px 14px 14px 16px !important',
+                                pb: '14px !important',
                                 display: 'flex',
                                 flexDirection: 'column',
                                 gap: 1,
                             }}
                         >
-                            {/* Card Top Row: Drag Handle + Tag Dot + Actions */}
-                            <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1 }}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexGrow: 1, minWidth: 0 }}>
+                            {/* Card Top Row: Drag Handle + Badges (Priority / Due Date) + Hover Actions */}
+                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1, minHeight: 24 }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, flexWrap: 'wrap', flexGrow: 1, minWidth: 0 }}>
                                     {/* Subtle Drag Handle Indicator */}
                                     <Box
                                         className="drag-handle-icon"
@@ -196,32 +196,53 @@ const TaskCard = ({ task, index, updateTask, deleteTask, columnId }: Props) => {
                                         <DragIndicatorIcon sx={{ fontSize: 16 }} />
                                     </Box>
 
-                                    {/* Color Tag Dot */}
-                                    {hasCustomColor && (
-                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                            <Box
+                                    {/* Priority Badge */}
+                                    {priorityConfig && (
+                                        <Tooltip title={`Priority: ${priorityConfig.label}`}>
+                                            <Chip
+                                                icon={<priorityConfig.icon sx={{ fontSize: '13px !important', color: `${priorityConfig.color} !important` }} />}
+                                                label={priorityConfig.label}
+                                                size="small"
                                                 sx={{
-                                                    width: 8,
-                                                    height: 8,
-                                                    borderRadius: '50%',
-                                                    bgcolor: task.color,
-                                                    mr: 0.8,
-                                                    boxShadow: isDark ? `0 0 8px ${task.color}` : 'none',
+                                                    height: 20,
+                                                    fontSize: '0.66rem',
+                                                    fontWeight: 800,
+                                                    letterSpacing: '0.04em',
+                                                    borderRadius: '6px',
+                                                    bgcolor: isDark ? `${priorityConfig.color}18` : `${priorityConfig.color}12`,
+                                                    color: priorityConfig.color,
+                                                    border: `1px solid ${priorityConfig.color}35`,
+                                                    '& .MuiChip-label': { px: 0.6 },
                                                 }}
                                             />
-                                            <Typography 
-                                                variant="caption" 
-                                                sx={{ 
-                                                    fontSize: '0.68rem', 
-                                                    fontWeight: 700, 
-                                                    letterSpacing: '0.05em',
-                                                    textTransform: 'uppercase',
-                                                    color: 'text.secondary' 
+                                        </Tooltip>
+                                    )}
+
+                                    {/* Due Date Badge */}
+                                    {dueDateInfo && (
+                                        <Tooltip title={`Due Date: ${task.dueDate}`}>
+                                            <Chip
+                                                icon={<dueDateInfo.icon sx={{ fontSize: '11px !important', color: `${dueDateInfo.color} !important` }} />}
+                                                label={dueDateInfo.label}
+                                                size="small"
+                                                sx={{
+                                                    height: 20,
+                                                    fontSize: '0.66rem',
+                                                    fontWeight: 700,
+                                                    borderRadius: '6px',
+                                                    bgcolor: isDark 
+                                                        ? (dueDateInfo.state === 'overdue' ? 'rgba(244, 63, 94, 0.18)' : 'rgba(255, 255, 255, 0.05)')
+                                                        : (dueDateInfo.state === 'overdue' ? 'rgba(244, 63, 94, 0.12)' : 'rgba(0, 0, 0, 0.04)'),
+                                                    color: dueDateInfo.color,
+                                                    border: `1px solid ${
+                                                        dueDateInfo.state === 'overdue' 
+                                                            ? 'rgba(244, 63, 94, 0.4)' 
+                                                            : (isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)')
+                                                    }`,
+                                                    '& .MuiChip-label': { px: 0.6 },
                                                 }}
-                                            >
-                                                Tagged
-                                            </Typography>
-                                        </Box>
+                                            />
+                                        </Tooltip>
                                     )}
                                 </Box>
 
@@ -291,9 +312,9 @@ const TaskCard = ({ task, index, updateTask, deleteTask, columnId }: Props) => {
                                 variant="body1"
                                 sx={{
                                     wordBreak: 'break-word',
-                                    fontWeight: 500,
+                                    fontWeight: 600,
                                     fontSize: '0.9rem',
-                                    lineHeight: 1.5,
+                                    lineHeight: 1.45,
                                     color: 'text.primary',
                                 }}
                             >
@@ -348,60 +369,6 @@ const TaskCard = ({ task, index, updateTask, deleteTask, columnId }: Props) => {
                                             }
                                         }}
                                     />
-                                </Box>
-                            )}
-
-                            {/* Metadata Footer: Priority & Due Date Badges */}
-                            {(priorityConfig || dueDateInfo) && (
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5, flexWrap: 'wrap' }}>
-                                    {/* Priority Badge */}
-                                    {priorityConfig && (
-                                        <Tooltip title={`Priority: ${priorityConfig.label}`}>
-                                            <Chip
-                                                icon={<priorityConfig.icon sx={{ fontSize: '13px !important', color: `${priorityConfig.color} !important` }} />}
-                                                label={priorityConfig.label}
-                                                size="small"
-                                                sx={{
-                                                    height: 22,
-                                                    fontSize: '0.68rem',
-                                                    fontWeight: 800,
-                                                    letterSpacing: '0.04em',
-                                                    borderRadius: '6px',
-                                                    bgcolor: isDark ? `${priorityConfig.color}18` : `${priorityConfig.color}12`,
-                                                    color: priorityConfig.color,
-                                                    border: `1px solid ${priorityConfig.color}35`,
-                                                    '& .MuiChip-label': { px: 0.7 },
-                                                }}
-                                            />
-                                        </Tooltip>
-                                    )}
-
-                                    {/* Due Date Badge */}
-                                    {dueDateInfo && (
-                                        <Tooltip title={`Due Date: ${task.dueDate}`}>
-                                            <Chip
-                                                icon={<dueDateInfo.icon sx={{ fontSize: '12px !important', color: `${dueDateInfo.color} !important` }} />}
-                                                label={dueDateInfo.label}
-                                                size="small"
-                                                sx={{
-                                                    height: 22,
-                                                    fontSize: '0.68rem',
-                                                    fontWeight: 700,
-                                                    borderRadius: '6px',
-                                                    bgcolor: isDark 
-                                                        ? (dueDateInfo.state === 'overdue' ? 'rgba(244, 63, 94, 0.18)' : 'rgba(255, 255, 255, 0.05)')
-                                                        : (dueDateInfo.state === 'overdue' ? 'rgba(244, 63, 94, 0.12)' : 'rgba(0, 0, 0, 0.04)'),
-                                                    color: dueDateInfo.color,
-                                                    border: `1px solid ${
-                                                        dueDateInfo.state === 'overdue' 
-                                                            ? 'rgba(244, 63, 94, 0.4)' 
-                                                            : (isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)')
-                                                    }`,
-                                                    '& .MuiChip-label': { px: 0.7 },
-                                                }}
-                                            />
-                                        </Tooltip>
-                                    )}
                                 </Box>
                             )}
                         </CardContent>
