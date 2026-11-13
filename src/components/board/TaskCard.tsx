@@ -22,7 +22,7 @@ import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CheckBoxOutlinedIcon from "@mui/icons-material/CheckBoxOutlined";
 import type { Task, TaskPriority, Subtask } from "../../hooks/useStore";
-import { useState } from "react";
+import { useState, memo } from "react";
 import TaskModal from "../modals/TaskModal";
 import { useNotification } from "../../context/NotificationContext";
 
@@ -110,39 +110,41 @@ const TaskCard = ({ task, index, updateTask, deleteTask, columnId }: Props) => {
                         {...provided.dragHandleProps}
                         ref={provided.innerRef}
                         sx={{
+                            flexShrink: 0,
+                            width: '100%',
+                            boxSizing: 'border-box',
+                            minHeight: 'fit-content',
                             mb: 1.5,
                             borderRadius: '12px',
                             position: 'relative',
                             backgroundColor: isDark 
-                                ? (snapshot.isDragging ? 'rgba(28, 36, 56, 0.95)' : 'rgba(18, 24, 38, 0.75)')
-                                : (snapshot.isDragging ? '#FFFFFF' : '#FFFFFF'),
-                            backdropFilter: 'blur(10px)',
+                                ? (snapshot.isDragging ? '#1E293B' : '#111827')
+                                : '#FFFFFF',
                             border: `1px solid ${
                                 snapshot.isDragging
-                                    ? (isDark ? '#6366F1' : '#4F46E5')
+                                    ? (isDark ? '#818CF8' : '#4F46E5')
                                     : (isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(226, 232, 240, 0.9)')
                             }`,
                             boxShadow: snapshot.isDragging
                                 ? (isDark 
-                                    ? '0 16px 32px -4px rgba(0, 0, 0, 0.6), 0 0 20px rgba(99, 102, 241, 0.4)' 
-                                    : '0 16px 32px -4px rgba(0, 0, 0, 0.16), 0 0 16px rgba(79, 70, 229, 0.25)')
+                                    ? '0 12px 28px -4px rgba(0, 0, 0, 0.6), 0 0 15px rgba(99, 102, 241, 0.3)' 
+                                    : '0 12px 28px -4px rgba(0, 0, 0, 0.16), 0 0 12px rgba(79, 70, 229, 0.2)')
                                 : (isDark
-                                    ? '0 2px 8px 0 rgba(0, 0, 0, 0.2)'
-                                    : '0 2px 6px 0 rgba(0, 0, 0, 0.04)'),
-                            transform: snapshot.isDragging ? 'rotate(2deg) scale(1.02)' : 'none',
-                            transition: snapshot.isDragging 
-                                ? 'box-shadow 0.2s ease, transform 0.2s ease'
-                                : 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                                    ? '0 2px 6px 0 rgba(0, 0, 0, 0.25)'
+                                    : '0 1px 4px 0 rgba(0, 0, 0, 0.04)'),
                             cursor: 'grab',
                             '&:active': {
                                 cursor: 'grabbing',
                             },
+                            // Zero transition on drag to ensure 1:1 instantaneous cursor tracking
+                            transition: snapshot.isDragging 
+                                ? 'none'
+                                : 'border-color 0.15s ease, box-shadow 0.15s ease',
                             '&:hover': {
-                                transform: snapshot.isDragging ? 'rotate(2deg) scale(1.02)' : 'translateY(-2px)',
-                                borderColor: isDark ? 'rgba(99, 102, 241, 0.4)' : 'rgba(99, 102, 241, 0.3)',
+                                borderColor: isDark ? 'rgba(99, 102, 241, 0.5)' : 'rgba(99, 102, 241, 0.4)',
                                 boxShadow: isDark 
-                                    ? '0 8px 20px -4px rgba(0, 0, 0, 0.4), 0 0 12px rgba(99, 102, 241, 0.12)' 
-                                    : '0 8px 18px -4px rgba(0, 0, 0, 0.08)',
+                                    ? '0 6px 16px -2px rgba(0, 0, 0, 0.4)' 
+                                    : '0 6px 14px -2px rgba(0, 0, 0, 0.06)',
                                 '& .task-actions': {
                                     opacity: 1,
                                     transform: 'translateX(0)',
@@ -255,9 +257,8 @@ const TaskCard = ({ task, index, updateTask, deleteTask, columnId }: Props) => {
                                         gap: 0.5,
                                         opacity: { xs: 1, sm: 0 },
                                         transform: { xs: 'none', sm: 'translateX(4px)' },
-                                        transition: 'all 0.2s ease',
-                                        bgcolor: isDark ? 'rgba(15, 23, 42, 0.85)' : 'rgba(241, 245, 249, 0.9)',
-                                        backdropFilter: 'blur(4px)',
+                                        transition: 'opacity 0.15s ease',
+                                        bgcolor: isDark ? '#1E293B' : '#F1F5F9',
                                         p: 0.3,
                                         borderRadius: '8px',
                                         border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)'}`,
@@ -376,26 +377,28 @@ const TaskCard = ({ task, index, updateTask, deleteTask, columnId }: Props) => {
                 )}
             </Draggable>
 
-            <TaskModal
-                open={editModalOpen}
-                mode="edit"
-                initialContent={task.content}
-                initialColor={task.color}
-                initialPriority={task.priority}
-                initialDueDate={task.dueDate}
-                initialSubtasks={task.subtasks}
-                onClose={() => setEditModalOpen(false)}
-                onSave={(content, color, priority, dueDate, subtasks) => {
-                    updateTask(task.id, content, color, priority, dueDate, subtasks);
-                    showNotification("Task updated", "success");
-                }}
-                onDelete={() => {
-                    deleteTask(task.id, columnId);
-                    showNotification("Task deleted", "info");
-                }}
-            />
+            {editModalOpen && (
+                <TaskModal
+                    open={editModalOpen}
+                    mode="edit"
+                    initialContent={task.content}
+                    initialColor={task.color}
+                    initialPriority={task.priority}
+                    initialDueDate={task.dueDate}
+                    initialSubtasks={task.subtasks}
+                    onClose={() => setEditModalOpen(false)}
+                    onSave={(content, color, priority, dueDate, subtasks) => {
+                        updateTask(task.id, content, color, priority, dueDate, subtasks);
+                        showNotification("Task updated", "success");
+                    }}
+                    onDelete={() => {
+                        deleteTask(task.id, columnId);
+                        showNotification("Task deleted", "info");
+                    }}
+                />
+            )}
         </>
     );
 };
 
-export default TaskCard;
+export default memo(TaskCard);

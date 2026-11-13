@@ -206,7 +206,6 @@ export const ExportImportModal = ({ open, onClose }: Props) => {
                     boxShadow: isDark
                         ? '0 24px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(99, 102, 241, 0.2)'
                         : '0 20px 40px rgba(0, 0, 0, 0.12)',
-                    backdropFilter: 'blur(20px)',
                     overflow: 'hidden',
                 }
             }}

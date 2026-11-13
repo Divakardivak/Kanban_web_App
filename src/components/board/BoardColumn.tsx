@@ -6,7 +6,7 @@ import AddIcon from "@mui/icons-material/Add";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import type { Column, Task, TaskPriority, Subtask } from "../../hooks/useStore";
 import TaskCard from "./TaskCard";
-import { useState } from "react";
+import { useState, memo } from "react";
 import TaskModal from "../modals/TaskModal";
 import ConfirmModal from "../modals/ConfirmModal";
 import ColumnModal from "../modals/ColumnModal";
@@ -57,12 +57,13 @@ const BoardColumn = ({
                             minWidth: { xs: '84vw', sm: 310, md: 320 },
                             maxWidth: { xs: 340, sm: 340 },
                             height: '100%',
+                            maxHeight: '100%',
+                            minHeight: 0,
                             display: "flex",
                             flexDirection: "column",
                             backgroundColor: isDark
-                                ? 'rgba(12, 17, 29, 0.75)'
-                                : 'rgba(241, 245, 249, 0.85)',
-                            backdropFilter: 'blur(16px)',
+                                ? '#0D1322'
+                                : '#F1F5F9',
                             border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(226, 232, 240, 0.9)'}`,
                             borderRadius: '16px',
                             mr: { xs: 1.5, sm: 2.5 },
@@ -78,6 +79,7 @@ const BoardColumn = ({
                             sx={{
                                 height: 4,
                                 width: '100%',
+                                flexShrink: 0,
                                 background: `linear-gradient(90deg, ${columnColor} 0%, ${isDark ? 'rgba(99, 102, 241, 0.4)' : 'rgba(79, 70, 229, 0.3)'} 100%)`,
                                 boxShadow: isDark ? `0 0 12px ${columnColor}` : 'none',
                             }}
@@ -91,6 +93,7 @@ const BoardColumn = ({
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "space-between",
+                                flexShrink: 0,
                                 cursor: 'grab',
                                 '&:active': { cursor: 'grabbing' },
                             }}
@@ -185,12 +188,13 @@ const BoardColumn = ({
                                     ref={provided.innerRef}
                                     {...provided.droppableProps}
                                     sx={{
-                                        flexGrow: 1,
+                                        flex: '1 1 auto',
+                                        minHeight: 0,
                                         overflowY: 'auto',
+                                        overflowX: 'hidden',
                                         px: 1.5,
                                         py: 1,
-                                        minHeight: 120,
-                                        transition: 'all 0.2s ease',
+                                        transition: 'background-color 0.2s ease, outline 0.2s ease',
                                         borderRadius: '10px',
                                         backgroundColor: snapshot.isDraggingOver
                                             ? (isDark ? 'rgba(99, 102, 241, 0.1)' : 'rgba(79, 70, 229, 0.05)')
@@ -201,6 +205,23 @@ const BoardColumn = ({
                                         outlineOffset: '-4px',
                                         display: 'flex',
                                         flexDirection: 'column',
+                                        scrollbarWidth: 'thin',
+                                        scrollbarColor: isDark 
+                                            ? 'rgba(255, 255, 255, 0.18) transparent' 
+                                            : 'rgba(0, 0, 0, 0.18) transparent',
+                                        '&::-webkit-scrollbar': {
+                                            width: 6,
+                                        },
+                                        '&::-webkit-scrollbar-track': {
+                                            background: 'transparent',
+                                        },
+                                        '&::-webkit-scrollbar-thumb': {
+                                            backgroundColor: isDark ? 'rgba(255, 255, 255, 0.16)' : 'rgba(0, 0, 0, 0.16)',
+                                            borderRadius: 3,
+                                            '&:hover': {
+                                                backgroundColor: isDark ? 'rgba(99, 102, 241, 0.5)' : 'rgba(79, 70, 229, 0.4)',
+                                            },
+                                        },
                                     }}
                                 >
                                     {tasks.map((task, index) => (
@@ -239,7 +260,7 @@ const BoardColumn = ({
                         </Droppable>
 
                         {/* Clean Add Task Button at Bottom */}
-                        <Box sx={{ p: 1.5, pt: 0.5 }}>
+                        <Box sx={{ p: 1.5, pt: 0.5, flexShrink: 0 }}>
                             <Button
                                 startIcon={<AddIcon sx={{ fontSize: 18 }} />}
                                 fullWidth
@@ -269,40 +290,46 @@ const BoardColumn = ({
                 )}
             </Draggable>
 
-            <TaskModal
-                open={addTaskModalOpen}
-                mode="add"
-                onClose={() => setAddTaskModalOpen(false)}
-                onSave={(content, color, priority, dueDate, subtasks) => {
-                    addTask(column.id, content, color, priority, dueDate, subtasks);
-                    showNotification("Task added successfully", "success");
-                }}
-            />
+            {addTaskModalOpen && (
+                <TaskModal
+                    open={addTaskModalOpen}
+                    mode="add"
+                    onClose={() => setAddTaskModalOpen(false)}
+                    onSave={(content, color, priority, dueDate, subtasks) => {
+                        addTask(column.id, content, color, priority, dueDate, subtasks);
+                        showNotification("Task added successfully", "success");
+                    }}
+                />
+            )}
 
-            <ColumnModal
-                open={editColumnModalOpen}
-                mode="edit"
-                initialTitle={column.title}
-                initialColor={column.color}
-                onClose={() => setEditColumnModalOpen(false)}
-                onSave={(title, color) => {
-                    updateColumn(column.id, title, color);
-                    showNotification("Column updated", "success");
-                }}
-            />
+            {editColumnModalOpen && (
+                <ColumnModal
+                    open={editColumnModalOpen}
+                    mode="edit"
+                    initialTitle={column.title}
+                    initialColor={column.color}
+                    onClose={() => setEditColumnModalOpen(false)}
+                    onSave={(title, color) => {
+                        updateColumn(column.id, title, color);
+                        showNotification("Column updated", "success");
+                    }}
+                />
+            )}
 
-            <ConfirmModal
-                open={confirmDeleteOpen}
-                title="Delete Column"
-                content={`Are you sure you want to delete column "${column.title}" and all its tasks?`}
-                onClose={() => setConfirmDeleteOpen(false)}
-                onConfirm={() => {
-                    deleteColumn(column.id);
-                    showNotification("Column deleted", "warning");
-                }}
-            />
+            {confirmDeleteOpen && (
+                <ConfirmModal
+                    open={confirmDeleteOpen}
+                    title="Delete Column"
+                    content={`Are you sure you want to delete column "${column.title}" and all its tasks?`}
+                    onClose={() => setConfirmDeleteOpen(false)}
+                    onConfirm={() => {
+                        deleteColumn(column.id);
+                        showNotification("Column deleted", "warning");
+                    }}
+                />
+            )}
         </>
     );
 };
 
-export default BoardColumn;
+export default memo(BoardColumn);

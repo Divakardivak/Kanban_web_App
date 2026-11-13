@@ -159,7 +159,6 @@ export const ActivityDrawer = ({ open, onClose }: Props) => {
                         ? 'radial-gradient(circle at 10% 10%, rgba(99, 102, 241, 0.08) 0%, transparent 40%), linear-gradient(180deg, rgba(16, 24, 39, 0.95) 0%, rgba(10, 14, 24, 0.98) 100%)'
                         : 'linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)',
                     borderLeft: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)'}`,
-                    backdropFilter: 'blur(20px)',
                     boxShadow: isDark
                         ? '-10px 0 30px rgba(0, 0, 0, 0.6), -2px 0 16px rgba(168, 85, 247, 0.15)'
                         : '-10px 0 30px rgba(0, 0, 0, 0.08)',

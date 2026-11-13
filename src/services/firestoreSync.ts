@@ -134,14 +134,12 @@ export const initStoreSubscriber = () => {
 
         if (!hasBoardChanged) return;
 
-        useStore.getState().setSyncStatus('syncing');
-
-        // Debounce saving by 350ms to batch drag/drop and rapid actions
+        // Debounce saving by 500ms to batch drag/drop and rapid actions smoothly
         if (saveTimeout) clearTimeout(saveTimeout);
 
         saveTimeout = setTimeout(async () => {
             await saveBoardToCloud(user.uid);
-        }, 350);
+        }, 500);
     });
 };
 

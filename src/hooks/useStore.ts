@@ -176,7 +176,13 @@ export const useStore = create<BoardState>()(
         (set) => ({
             ...initialData,
 
-            setSyncStatus: (status, error = null) => set({ syncStatus: status, syncError: error }),
+            setSyncStatus: (status, error = null) =>
+                set((state) => {
+                    if (state.syncStatus === status && state.syncError === error) {
+                        return state;
+                    }
+                    return { syncStatus: status, syncError: error };
+                }),
 
             syncFromRemote: ({ tasks, columns, columnOrder, activities }) =>
                 set((state) => ({

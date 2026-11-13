@@ -6,7 +6,7 @@ import ViewColumnIcon from "@mui/icons-material/ViewColumn";
 import { useStore, type Task } from "../../hooks/useStore";
 import BoardColumn from "./BoardColumn";
 import BoardFilterBar from "./BoardFilterBar";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import ColumnModal from "../modals/ColumnModal";
 import { useNotification } from "../../context/NotificationContext";
 
@@ -47,7 +47,7 @@ const Board = () => {
         setWinReady(true);
     }, []);
 
-    const onDragEnd = (result: DropResult) => {
+    const onDragEnd = useCallback((result: DropResult) => {
         const { destination, source, draggableId, type } = result;
 
         if (!destination) return;
@@ -71,14 +71,31 @@ const Board = () => {
             source.index,
             destination.index
         );
-    };
+    }, [moveColumn, moveTask]);
 
-    // Filter and Sort calculation for all columns
+    // Filter and Sort calculation for all columns (with fast-path for default state)
     const filteredTasksByColumn = useMemo(() => {
+        const result: Record<string, Task[]> = {};
+
+        const hasActiveFilter = Boolean(
+            searchQuery.trim() ||
+            priorityFilter !== 'all' ||
+            dueFilter !== 'all' ||
+            tagColorFilter !== 'all' ||
+            sortBy !== 'manual'
+        );
+
+        if (!hasActiveFilter) {
+            columnOrder.forEach((colId) => {
+                const column = columns[colId];
+                if (!column) return;
+                result[colId] = column.taskIds.map((id) => tasks[id]).filter(Boolean);
+            });
+            return result;
+        }
+
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-
-        const result: Record<string, Task[]> = {};
 
         columnOrder.forEach((colId) => {
             const column = columns[colId];
@@ -158,12 +175,12 @@ const Board = () => {
     }
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', overflow: 'hidden' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', minHeight: 0, overflow: 'hidden' }}>
             {/* Quick Filters & Sorting Bar */}
             <BoardFilterBar />
 
             {/* Board Canvas Area */}
-            <Box sx={{ flexGrow: 1, height: 'calc(100% - 48px)', overflow: 'hidden' }}>
+            <Box sx={{ flex: '1 1 auto', minHeight: 0, overflow: 'hidden', position: 'relative' }}>
                 <DragDropContext onDragEnd={onDragEnd}>
                     <Droppable droppableId="all-columns" direction="horizontal" type="column">
                         {(provided) => (
@@ -178,7 +195,12 @@ const Board = () => {
                                     overflowY: "hidden",
                                     alignItems: "stretch",
                                     p: { xs: 1.5, sm: 2.5, md: 3 },
+                                    boxSizing: 'border-box',
                                     WebkitOverflowScrolling: 'touch',
+                                    scrollbarWidth: 'thin',
+                                    scrollbarColor: isDark 
+                                        ? 'rgba(255, 255, 255, 0.15) transparent' 
+                                        : 'rgba(0, 0, 0, 0.12) transparent',
                                     '&::-webkit-scrollbar': {
                                         height: 8,
                                     },
@@ -217,7 +239,7 @@ const Board = () => {
                                 {provided.placeholder}
 
                                 {/* Futuristic Add Column Card */}
-                                <Box sx={{ width: 280, minWidth: 280 }}>
+                                <Box sx={{ width: 280, minWidth: 280, flexShrink: 0 }}>
                                     <Button
                                         variant="outlined"
                                         onClick={() => setAddColumnModalOpen(true)}
@@ -234,10 +256,9 @@ const Board = () => {
                                             borderStyle: 'dashed',
                                             borderWidth: 2,
                                             borderColor: isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.12)',
-                                            bgcolor: isDark ? 'rgba(12, 17, 29, 0.4)' : 'rgba(255, 255, 255, 0.4)',
-                                            backdropFilter: 'blur(10px)',
+                                            bgcolor: isDark ? '#0D1322' : '#FFFFFF',
                                             color: 'text.secondary',
-                                            transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                                            transition: 'border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease',
                                             '&:hover': {
                                                 borderColor: isDark ? '#818CF8' : '#6366F1',
                                                 bgcolor: isDark ? 'rgba(99, 102, 241, 0.08)' : 'rgba(79, 70, 229, 0.05)',

@@ -10,7 +10,7 @@ import {
     ListItemIcon,
     ListItemText,
 } from "@mui/material";
-import { useState } from "react";
+import { useState, memo } from "react";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import SortIcon from "@mui/icons-material/Sort";
 import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
@@ -77,6 +77,7 @@ const BoardFilterBar = () => {
     return (
         <Box
             sx={{
+                flexShrink: 0,
                 px: { xs: 1.5, sm: 2.5, md: 3 },
                 py: 1,
                 display: 'flex',
@@ -86,8 +87,7 @@ const BoardFilterBar = () => {
                 overflowX: { xs: 'auto', md: 'visible' },
                 gap: 1.2,
                 borderBottom: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'}`,
-                bgcolor: isDark ? 'rgba(10, 14, 23, 0.65)' : 'rgba(248, 250, 252, 0.75)',
-                backdropFilter: 'blur(12px)',
+                bgcolor: isDark ? '#0A0E17' : '#F8FAFC',
                 position: 'relative',
                 zIndex: 2,
                 '&::-webkit-scrollbar': { display: 'none' },
@@ -373,4 +373,4 @@ const BoardFilterBar = () => {
     );
 };
 
-export default BoardFilterBar;
+export default memo(BoardFilterBar);

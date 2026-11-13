@@ -32,7 +32,7 @@ import { useColorMode } from "../../context/ColorModeContext";
 import { useStore } from "../../hooks/useStore";
 import { useFirestoreSync } from "../../hooks/useFirestoreSync";
 import { styled } from "@mui/material/styles";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import ConfirmModal from "../modals/ConfirmModal";
 import AiPlannerModal from "../modals/AiPlannerModal";
 import { ExportImportModal } from "../modals/ExportImportModal";
@@ -99,7 +99,14 @@ const AppLayout = () => {
     const theme = useTheme();
     const isDark = theme.palette.mode === 'dark';
     const colorMode = useColorMode();
-    const { searchQuery, setSearchQuery, clearBoard, tasks, columnOrder, activities } = useStore();
+    // Atomic Zustand selectors to prevent unnecessary re-renders of the entire layout
+    const totalTasks = useStore((state) => Object.keys(state.tasks).length);
+    const totalColumns = useStore((state) => state.columnOrder.length);
+    const activitiesCount = useStore((state) => state.activities.length);
+    const searchQuery = useStore((state) => state.searchQuery);
+    const setSearchQuery = useStore((state) => state.setSearchQuery);
+    const clearBoard = useStore((state) => state.clearBoard);
+
     const { syncStatus, syncError, triggerManualSave } = useFirestoreSync();
     const [confirmResetOpen, setConfirmResetOpen] = useState(false);
     const [aiPlannerOpen, setAiPlannerOpen] = useState(false);
@@ -107,8 +114,29 @@ const AppLayout = () => {
     const [activityDrawerOpen, setActivityDrawerOpen] = useState(false);
     const { showNotification } = useNotification();
 
-    const totalTasks = Object.keys(tasks).length;
-    const totalColumns = columnOrder.length;
+    // Debounced search state for 120 FPS typing responsiveness
+    const [localSearch, setLocalSearch] = useState(searchQuery);
+    const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    useEffect(() => {
+        setLocalSearch(searchQuery);
+    }, [searchQuery]);
+
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value;
+        setLocalSearch(val);
+        if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+        searchDebounceRef.current = setTimeout(() => {
+            setSearchQuery(val);
+        }, 120);
+    };
+
+    const handleClearSearch = () => {
+        setLocalSearch("");
+        if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+        setSearchQuery("");
+    };
+
     const currentUserEmail = auth.currentUser?.email || "User";
     const userInitial = currentUserEmail.charAt(0).toUpperCase();
 
@@ -144,7 +172,7 @@ const AppLayout = () => {
                 }}
             />
 
-            {/* Futuristic Glassmorphic Header */}
+            {/* Futuristic Header */}
             <AppBar
                 position="static"
                 elevation={0}
@@ -152,8 +180,7 @@ const AppLayout = () => {
                     position: 'relative',
                     zIndex: 1,
                     borderBottom: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.07)'}`,
-                    bgcolor: isDark ? 'rgba(10, 14, 23, 0.82)' : 'rgba(255, 255, 255, 0.85)',
-                    backdropFilter: 'blur(16px)',
+                    bgcolor: isDark ? '#0A0E17' : '#FFFFFF',
                     color: 'text.primary',
                 }}
             >
@@ -261,13 +288,13 @@ const AppLayout = () => {
                         <StyledInputBase
                             placeholder="Search tasks..."
                             inputProps={{ 'aria-label': 'search tasks' }}
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
+                            value={localSearch}
+                            onChange={handleSearchChange}
                         />
-                        {searchQuery && (
+                        {localSearch && (
                             <IconButton
                                 size="small"
-                                onClick={() => setSearchQuery("")}
+                                onClick={handleClearSearch}
                                 sx={{ mr: 0.5, p: 0.5, color: 'text.secondary' }}
                             >
                                 <ClearIcon sx={{ fontSize: 16 }} />
@@ -428,7 +455,7 @@ const AppLayout = () => {
                                 }}
                             >
                                 <Badge
-                                    badgeContent={activities.length > 0 ? activities.length : undefined}
+                                    badgeContent={activitiesCount > 0 ? activitiesCount : undefined}
                                     max={99}
                                     sx={{
                                         '& .MuiBadge-badge': {
@@ -546,40 +573,51 @@ const AppLayout = () => {
                 component="main"
                 sx={{
                     flexGrow: 1,
+                    minHeight: 0,
                     overflow: 'hidden',
                     position: 'relative',
                     zIndex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
                 }}
             >
                 <Outlet />
             </Box>
 
-            <AiPlannerModal
-                open={aiPlannerOpen}
-                onClose={() => setAiPlannerOpen(false)}
-            />
+            {aiPlannerOpen && (
+                <AiPlannerModal
+                    open={aiPlannerOpen}
+                    onClose={() => setAiPlannerOpen(false)}
+                />
+            )}
 
-            <ExportImportModal
-                open={exportImportOpen}
-                onClose={() => setExportImportOpen(false)}
-            />
+            {exportImportOpen && (
+                <ExportImportModal
+                    open={exportImportOpen}
+                    onClose={() => setExportImportOpen(false)}
+                />
+            )}
 
-            <ActivityDrawer
-                open={activityDrawerOpen}
-                onClose={() => setActivityDrawerOpen(false)}
-            />
+            {activityDrawerOpen && (
+                <ActivityDrawer
+                    open={activityDrawerOpen}
+                    onClose={() => setActivityDrawerOpen(false)}
+                />
+            )}
 
-            <ConfirmModal
-                open={confirmResetOpen}
-                title="Reset FlowBoard"
-                content="Are you sure you want to delete ALL columns and tasks? This action cannot be undone."
-                onClose={() => setConfirmResetOpen(false)}
-                onConfirm={() => {
-                    clearBoard();
-                    showNotification("Board has been completely reset", "warning");
-                    setConfirmResetOpen(false);
-                }}
-            />
+            {confirmResetOpen && (
+                <ConfirmModal
+                    open={confirmResetOpen}
+                    title="Reset FlowBoard"
+                    content="Are you sure you want to delete ALL columns and tasks? This action cannot be undone."
+                    onClose={() => setConfirmResetOpen(false)}
+                    onConfirm={() => {
+                        clearBoard();
+                        showNotification("Board has been completely reset", "warning");
+                        setConfirmResetOpen(false);
+                    }}
+                />
+            )}
         </Box>
     );
 };
