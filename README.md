@@ -1,25 +1,56 @@
-# FlowBoard ⚡ — Futuristic Glassmorphic Cloud Kanban Web App
+<div align="center">
 
-A next-generation, high-fidelity **Kanban Project Management Web Application** engineered with a sleek, futuristic glassmorphic UI, real-time multi-device cloud synchronization, Google Gemini AI task generation, offline backup/restore, and interactive task checklists.
+  <img src="public/logo.svg" alt="FlowBoard Logo" width="110" height="110" />
 
-![FlowBoard Banner](https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80)
+  # FlowBoard ⚡
+  ### *Futuristic Glassmorphic Cloud Kanban Web Application*
+
+  <p>
+    <a href="https://kanban-web-app-one.vercel.app/auth" target="_blank">
+      <img src="https://img.shields.io/badge/🚀_Live_Demo-Visit_FlowBoard-6366F1?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo" />
+    </a>
+    <img src="https://img.shields.io/badge/Status-Live_Production-10B981?style=for-the-badge" alt="Status: Live" />
+    <img src="https://img.shields.io/badge/React_19-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React 19" />
+    <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+    <img src="https://img.shields.io/badge/Firebase_Firestore-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" alt="Firebase" />
+    <img src="https://img.shields.io/badge/MUI_v7-007FFF?style=for-the-badge&logo=mui&logoColor=white" alt="MUI" />
+  </p>
+
+  <p>
+    🔗 <strong>Live Production URL:</strong> <br />
+    <a href="https://kanban-web-app-one.vercel.app/auth" target="_blank"><strong>https://kanban-web-app-one.vercel.app/auth</strong></a>
+  </p>
+
+</div>
+
+---
+
+## 🌐 Live Production Demo
+
+FlowBoard is deployed and running live on **Vercel**:
+
+👉 **[https://kanban-web-app-one.vercel.app/auth](https://kanban-web-app-one.vercel.app/auth)**
+
+- **Instant Access**: Open the link on any desktop, tablet, or mobile phone.
+- **Zero Configuration**: Sign in with an email & password or create an account in 5 seconds.
+- **Real-Time Multi-Device Sync**: Any change you make updates across all open tabs and devices instantly.
 
 ---
 
 ## 🌟 Overview & Key Highlights
 
-FlowBoard elevates task management with modern desktop-grade ergonomics and a deep cyber aesthetic. Built with **React 19**, **TypeScript**, and **Material UI v7**, FlowBoard keeps your board seamlessly in sync across all your phones, tablets, and computers via **Google Cloud Firestore**.
+FlowBoard elevates modern project workflows with desktop-grade speed, fluid drag-and-drop mechanics, and a deep cyber aesthetic. Engineered with **React 19**, **TypeScript**, and **Material UI v7**, FlowBoard keeps your board seamlessly in sync across all devices via **Google Cloud Firestore**.
 
 ### 🚀 Core Superpowers:
-1. **☁️ Real-time Cloud Sync (Firestore)**: Sign in once and access your board anywhere. Changes propagate across browser tabs and devices with automatic debouncing.
-2. **🤖 AI Smart Task Planner (Gemini API)**: Type any project idea (e.g. *"Launch a SaaS MVP in 14 days"* or *"Prepare for Tech Interviews"*) and Gemini AI automatically constructs all tasks, priorities, deadlines, and multi-step checklists.
-3. **🔥 Task Priorities & Smart Due Dates**: Mark tasks as `Urgent`, `High`, `Medium`, or `Low`. Live deadline badges calculate relative time (`Today`, `Tomorrow`, `X days overdue`).
-4. **✅ Subtasks & Interactive Checklists**: Break big tasks into checklists with glowing progress bars and subtask completion counters.
+1. **☁️ Real-time Cloud Sync (Firestore)**: Sign in once and access your board anywhere. Changes propagate across browser tabs and devices with debounced automatic cloud persistence.
+2. **🤖 AI Smart Task Planner (Gemini API + Offline Engine)**: Type any project idea (e.g. *"Launch a SaaS MVP in 14 days"* or *"Prepare for Tech Interviews"*) and the AI engine automatically plans tasks, priorities, deadlines, and multi-step checklists.
+3. **🔥 Task Priorities & Smart Due Dates**: Assign `Urgent`, `High`, `Medium`, or `Low` priority badges. Smart deadline indicators calculate relative time (`Today`, `Tomorrow`, `X days overdue`).
+4. **✅ Subtasks & Interactive Checklists**: Break complex cards into checklist items with a dynamic progress bar and completion counters.
 5. **🏷️ Quick Filters & Multi-Criteria Sorting**: Filter cards instantly with one-click toggles (`High Priority`, `Due Soon`, `Overdue`), tag colors, or sort by `Due Date`, `Priority`, or `A → Z`.
-6. **📦 Board Backup & Transfer (JSON / CSV)**: Download full-fidelity offline JSON backups or export CSV spreadsheets to Excel and Notion. Restore or merge backup files with intelligent collision prevention.
+6. **📦 Board Backup & Transfer (JSON / CSV)**: Download full-fidelity offline JSON backups or export CSV spreadsheets to Excel and Notion. Restore or merge backup files anytime with collision prevention.
 7. **🔔 Live Task Activity Log & History**: A slide-out notification drawer tracks every move, creation, checklist completion, and edit chronologically with relative timestamps.
-8. **🎨 Futuristic Glassmorphic Design**: Cosmic deep dark mode, high-contrast light mode, ambient gradient backdrops, and fluid drag-and-drop micro-interactions.
-9. **📱 100% Responsive for Web & Mobile**: Handcrafted layout adapting from 360px mobile viewports to ultra-wide desktop monitors.
+8. **🎨 High-Performance Cyber UI**: Cosmic deep dark mode, high-contrast light mode, independent column vertical scrolling, and fluid 1:1 drag-and-drop tracking.
+9. **📱 100% Responsive for Web & Mobile**: Handcrafted layout adapting seamlessly from 360px mobile viewports to ultra-wide desktop monitors.
 
 ---
 
@@ -27,14 +58,15 @@ FlowBoard elevates task management with modern desktop-grade ergonomics and a de
 
 | Layer | Technologies Used | Description |
 | :--- | :--- | :--- |
-| **Frontend Framework** | **React 19**, **React DOM 19** | Latest modern React with concurrent features and optimal rendering |
+| **Live Deployment** | **Vercel** | Global edge network hosting with automated CI/CD builds |
+| **Frontend Framework** | **React 19**, **React DOM 19** | Modern React with concurrent rendering and optimized component trees |
 | **Language & Tooling** | **TypeScript 5.8**, **Vite 7** | Strictly typed codebase with lightning-fast Hot Module Replacement |
-| **Design System & UI** | **Material UI (MUI) v7**, **Emotion** | High-performance CSS-in-JS theming, glassmorphic paper styles, and custom typography |
-| **Typography** | **Plus Jakarta Sans**, **Outfit** | Curated Google Fonts delivering a modern, cyber-technical appearance |
-| **State Management** | **Zustand 5** | Lightweight, reactive centralized state with localStorage persistence middleware |
+| **Design System & UI** | **Material UI (MUI) v7**, **Emotion** | High-performance theming, dark/light color tokens, and custom cyber styling |
+| **Typography** | **Plus Jakarta Sans**, **Outfit** | Curated Google Fonts delivering a modern, technical aesthetic |
+| **State Management** | **Zustand 5** | Atomic selectors with local storage persistence middleware |
 | **Drag & Drop** | **@hello-pangea/dnd** | Smooth, accessible drag-and-drop for cards and workflow columns |
-| **Cloud & Backend** | **Firebase 12** (Authentication & Firestore) | Per-user Firestore database rules with real-time `onSnapshot` bi-directional live sync |
-| **Generative AI** | **Google Gemini API** (Interactions SDK) | Automated project breakdown engine with an intelligent offline fallback planner |
+| **Cloud & Backend** | **Firebase 12** (Authentication & Firestore) | User isolation security rules with real-time `onSnapshot` bi-directional live sync |
+| **Generative AI** | **Google Gemini API** (Gemini 1.5 Flash) | AI project breakdown engine with built-in zero-config heuristic fallback |
 | **Export / Import** | **Native Web Streams & Blobs (RFC 4180)** | Zero-dependency JSON serializer and RFC-compliant CSV parser with UTF-8 BOM |
 
 ---
@@ -43,16 +75,18 @@ FlowBoard elevates task management with modern desktop-grade ergonomics and a de
 
 ```
 Kanban Web App/
-├── public/                       # Static public assets
+├── public/
+│   ├── logo.svg                         # FlowBoard official brand logo
+│   └── vite.svg                         # Secondary vector asset
 ├── src/
 │   ├── components/
 │   │   ├── activity/
 │   │   │   └── ActivityDrawer.tsx       # Slide-out real-time activity timeline drawer
 │   │   ├── board/
 │   │   │   ├── Board.tsx                # Main board canvas, DragDropContext & column engine
-│   │   │   ├── BoardColumn.tsx          # Droppable column container with task list
+│   │   │   ├── BoardColumn.tsx          # Droppable column with independent vertical scrollbar
 │   │   │   ├── BoardFilterBar.tsx       # Quick filter chips, tag menus & sort controls
-│   │   │   └── TaskCard.tsx             # Draggable glass card, priority badges & progress bar
+│   │   │   └── TaskCard.tsx             # Memoized draggable card, priority badges & progress bar
 │   │   ├── layout/
 │   │   │   └── AppLayout.tsx            # Responsive glass navigation bar, search & controls
 │   │   └── modals/
@@ -69,8 +103,7 @@ Kanban Web App/
 │   │   └── useStore.ts                  # Central Zustand store (tasks, columns, activities)
 │   ├── screens/
 │   │   ├── BoardScreen.tsx              # Primary Kanban route
-│   │   ├── LoginScreen.tsx              # Clean sign-in & register portal
-│   │   └── NotFoundScreen.tsx           # 404 error page
+│   │   └── AuthScreen/                  # Clean sign-in & register portal
 │   ├── services/
 │   │   ├── aiPlannerService.ts          # Gemini API integration + offline rule generator
 │   │   ├── boardTransferService.ts      # JSON/CSV serializers, RFC parser & file downloaders
@@ -89,72 +122,78 @@ Kanban Web App/
 ## 🚀 Step-by-Step User Flow & User Guide
 
 ### 1. Account Creation & Sign In
-- When you first launch FlowBoard, enter your email and password to log in or create a new account.
-- **Why?** Each user receives their own isolated Firestore database space (`/users/{userId}/kanban/board`) so your board remains private and accessible from any device.
+- Navigate to **[https://kanban-web-app-one.vercel.app/auth](https://kanban-web-app-one.vercel.app/auth)**.
+- Enter your email and password to log in or create a new account.
+- **Why?** Each user receives an isolated Firestore document space (`/users/{userId}/kanban/board`) so your board remains private, secure, and accessible from any device.
 
 ### 2. Live Cloud Sync Indicator
-- In the top header bar, notice the **Cloud Sync Pill**:
-  - 🟢 **`CLOUD SYNCED`**: Board is in sync with Google Cloud Firestore.
-  - 🟣 **`SYNCING...`**: Saving your changes to the cloud (debounced 350ms to save network bandwidth).
-  - 🔴 **`OFFLINE`**: Operating offline using local storage. Click the pill anytime to retry syncing.
+- In the top navigation bar, check the **Cloud Sync Pill**:
+  - 🟢 **`CLOUD SYNCED`**: Board is safely synchronized with Google Cloud Firestore.
+  - 🟣 **`SAVING...`**: Actively writing changes to the cloud (debounced by 500ms).
+  - 🔴 **`OFFLINE`**: Operating locally using storage fallback. Click the pill anytime to retry syncing.
 
 ### 3. Creating & Managing Tasks
 - Click **`+ Add a task`** at the bottom of any column:
   - **Title**: Enter your task description.
-  - **Priority**: Choose `Urgent`, `High`, `Medium`, or `Low` for clear visual urgency.
-  - **Due Date**: Pick an upcoming deadline or click quick shortcuts (`Today`, `Tomorrow`, `In 1 Week`).
+  - **Priority**: Choose `Urgent`, `High`, `Medium`, or `Low` for clear visual hierarchy.
+  - **Due Date**: Select a deadline or click quick shortcuts (`Today`, `Tomorrow`, `In 1 Week`).
   - **Checklist Subtasks**: Break the task into actionable steps.
-  - **Tag Colors**: Select one of 8 vibrant cyber color tags.
+  - **Tag Colors**: Select one of 8 vibrant color tags.
 - Hover over any card to reveal quick **Edit** and **Delete** actions.
 
-### 4. Interactive Checklist & Progress Tracking
-- Check off subtasks directly inside the task modal or inspect them on the board.
-- The glowing progress bar dynamically fills and turns emerald green upon 100% completion (`X/Y subtasks • 100%`).
+### 4. Independent Column Scrolling
+- Columns maintain a fixed header and pinned `+ Add a task` button at the bottom.
+- When cards exceed the column height, a sleek, styled vertical scrollbar appears inside that column without disrupting the rest of the board.
 
-### 5. AI Smart Project Planner
+### 5. Interactive Checklist & Progress Tracking
+- Check off subtasks directly inside the task modal or inspect progress from the board.
+- The progress bar dynamically updates and turns emerald green upon 100% completion (`X/Y subtasks • 100%`).
+
+### 6. AI Smart Project Planner
 - Click the golden **`AI Plan`** button in the header.
-- Select a preset idea (*"Master TypeScript"*, *"Launch SaaS MVP"*, *"Tech Interview Prep"*) or type your custom prompt.
+- Select a preset idea (*"Master TypeScript"*, *"Launch SaaS MVP"*, *"Tech Interview Prep"*) or type your own custom project prompt.
 - Click **`Generate Plan`**:
-  - The built-in AI engine crafts a complete task breakdown with priorities, deadlines, and checklist items.
-  - Review the suggestions, uncheck any tasks you don't need, choose your target column, and click **`Add Tasks to Board`**.
+  - **Zero-Config Engine**: Works immediately without an API key using the built-in smart milestone planner.
+  - **Optional Gemini API**: Paste a free Gemini API key to activate live Google Gemini 1.5 Flash generation for any niche prompt.
+- Select which tasks to keep, choose your target column, and click **`Add Tasks to Board`**.
 
-### 6. Quick Filters & Sorting
+### 7. Quick Filters & Sorting
 - Use the **Filter Toolbar** located directly above the columns:
-  - Click **🔥 High Priority** to isolate Urgent and High items.
+  - Click **🔥 High Priority** to isolate Urgent and High tasks.
   - Click **⏰ Due Soon** to see tasks due within the next 3 days.
   - Click **🚨 Overdue** to catch missed deadlines.
   - Filter by specific **Priority** level or **Tag Color**.
   - Sort by **Due Date (Earliest First)**, **Priority (Highest First)**, or **Alphabetical (A → Z)**.
   - Click the **Reset** pill at any time to return to your normal drag-and-drop order.
 
-### 7. Backup, Export & Import (JSON / CSV)
+### 8. Backup, Export & Import (JSON / CSV)
 - Click the cyan **`Transfer`** button in the navigation header:
   - **Export JSON**: Download a complete backup of all columns, task orders, checklists, and colors.
-  - **Export CSV**: Download an Excel-ready tabular spreadsheet with task details.
-  - **Import & Restore**: Drag and drop any `.json` or `.csv` file. Choose between:
-    - **Merge with Current Board (Safe)**: Keeps existing tasks and intelligently appends new ones.
-    - **Replace Current Board**: Wipes the board and performs a fresh restore.
+  - **Export CSV**: Download an Excel-ready spreadsheet for reporting in Google Sheets or Notion.
+  - **Import & Restore**: Drag and drop any `.json` or `.csv` backup file. Choose between:
+    - **Merge with Current Board (Safe)**: Keeps your existing board and appends the new tasks.
+    - **Replace Current Board**: Performs a clean board restore from the backup file.
 
-### 8. Real-Time Activity Log & History
+### 9. Real-Time Activity Log & History
 - Click the purple **🔔 Bell Icon** in the top right to open the **Activity Drawer**.
-- Browse chronological records of all recent moves, edits, subtask checks, and creations.
+- Browse chronological records of all recent moves, edits, subtask checks, and column changes.
 - Filter by `All`, `Tasks`, `Moves`, `Checklists`, or `Columns`.
 
 ---
 
-## ⚡ Getting Started & Local Development
+## ⚡ Local Development Setup
 
 ### Prerequisites
 - **Node.js**: v18.0 or higher
 - **npm** or **pnpm**
 - A **Firebase Project** with Cloud Firestore and Authentication enabled (Email/Password provider).
 
-### Installation
+### Installation Steps
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/kanban-web-app.git
-   cd "Kanban Web App"
+   git clone https://github.com/Divakardivak/Kanban-Web-App.git
+   cd "Kanban-Web-App"
    ```
 
 2. **Install dependencies:**
@@ -163,7 +202,7 @@ Kanban Web App/
    ```
 
 3. **Configure Firebase:**
-   Ensure `src/firebase.tsx` points to your Firebase project configuration:
+   Ensure `src/firebase.tsx` matches your Firebase project credentials:
    ```ts
    const firebaseConfig = {
      apiKey: "YOUR_API_KEY",
@@ -176,7 +215,7 @@ Kanban Web App/
    ```
 
 4. **Publish Firestore Security Rules:**
-   In your **Firebase Console** ➔ **Firestore Database** ➔ **Rules**, publish the following security rule:
+   In your **Firebase Console** ➔ **Firestore Database** ➔ **Rules**:
    ```javascript
    rules_version = '2';
    service cloud.firestore {
@@ -198,20 +237,19 @@ Kanban Web App/
    ```bash
    npm run build
    ```
-   The minified production assets will be generated in `/dist`.
 
 ---
 
 ## 📱 Mobile & Responsive Design
 
-FlowBoard is engineered to be fully responsive:
+FlowBoard is handcrafted to be 100% responsive across all screen sizes:
 - **Mobile Phones (< 600px)**:
-  - Compact header navigation with icon buttons for AI Planner, Transfer, and Theme toggle.
-  - Dynamic column widths (`84vw`) allowing smooth side-scrolling between Kanban stages.
-  - Touch-optimized filter bar with momentum scrolling.
+  - Compact header navigation with icon action buttons.
+  - Column widths sized to `84vw` for smooth horizontal swiping between Kanban columns.
+  - Independent vertical card scrolling with touch momentum.
 - **Tablets & Laptops (600px - 1024px)**:
-  - Adaptive search bar width preventing toolbar wrapping.
-  - Labeled action chips with clean padding.
+  - Adaptive search bar width preventing header wrapping.
+  - Pinned filter bar with responsive horizontal scroll.
 - **Desktop Monitors (1024px+)**:
   - Full board statistics chip, wide search bar, multi-column expanded view.
 
@@ -219,4 +257,4 @@ FlowBoard is engineered to be fully responsive:
 
 ## 📄 License
 
-This project is licensed under the **MIT License** — feel free to customize, modify, and build upon it!
+This project is open-source and licensed under the **MIT License** — feel free to customize, modify, and build upon it!
